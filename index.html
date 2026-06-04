@@ -2,86 +2,72 @@
 <html>
 <head>
   <title>Prompt & Grimasser</title>
-</head>
-<body>
 
-<h2>Prompt & Grimasser 🎯</h2>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 1000px;
+    }
 
-<label>Team ID:</label>
-<input id="teamId" value="team1"/>
-<br><br>
+    h2 {
+      margin-bottom: 8px;
+    }
 
-<label>Situation:</label>
-<input id="situation"/>
-<br><br>
+    .layout {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
 
-<label>Personer:</label>
-<input id="characters"/>
-<br><br>
+    .gallery {
+      margin-top: 10px;
+    }
 
-<button onclick="submitAnswer()">Submit</button>
+    .main-image {
+      width: 100%;
+      max-width: 440px;
+      border: 3px solid #d0d0d0;
+      display: block;
+    }
 
-<p id="status"></p>
+    .thumbs {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
 
-<hr>
+    .thumb {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 3px solid transparent;
+      box-sizing: border-box;
+    }
 
-<h3>Result:</h3>
-<p id="result"></p>
+    .thumb.active {
+      border: 3px solid black;
+    }
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    onSnapshot,
-    query,
-    orderBy,
-    limit
-  } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    .avatar-box {
+      width: 128px;
+      height: 128px;
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8f8f8;
+      margin-bottom: 8px;
+    }
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBwIk0NTaRYf1S2cQ6yRtmZjUczqRQuNZU",
-    authDomain: "modu-dagen-2026.firebaseapp.com",
-    projectId: "modu-dagen-2026"
-  };
+    .avatar-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  window.submitAnswer = async function () {
-    const situation = document.getElementById("situation").value;
-    const characters = document.getElementById("characters").value;
-    const teamId = document.getElementById("teamId").value;
-
-    document.getElementById("status").innerText = "⏳ Sender...";
-
-    await addDoc(collection(db, "submissions"), {
-      teamId: teamId,
-      imageId: "image1",
-      situationGuess: situation,
-      characterGuess: characters,
-      score: 0,
-      status: "pending",
-      createdAt: new Date()
-    });
-
-    document.getElementById("status").innerText = "✅ Sendt";
-  };
-
-  // 🔥 LIVE LISTENER (det føles som AI)
-  const q = query(collection(db, "submissions"), orderBy("createdAt", "desc"), limit(1));
-
-  onSnapshot(q, (snapshot) => {
-    snapshot.forEach(doc => {
-      const data = doc.data();
-
-      document.getElementById("result").innerText =
-        `Score: ${data.score} | Status: ${data.status}`;
-    });
-  });
-
-</script>
-
-</body>
-</html>
