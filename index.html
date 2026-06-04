@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prompt & Grimasser</title>
+</head>
+<body>
+
+<h2>Prompt & Grimasser 🎯</h2>
+
+<label>Team ID:</label>
+<input id="teamId" value="team1"/>
+<br><br>
+
+<label>Situation:</label>
+<input id="situation"/>
+<br><br>
+
+<label>Personer:</label>
+<input id="characters"/>
+<br><br>
+
+<button onclick="submitAnswer()">Submit</button>
+
+<p id="status"></p>
+
+<hr>
+
+<h3>Result:</h3>
+<p id="result"></p>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    onSnapshot,
+    query,
+    orderBy,
+    limit
+  } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "DIN_API_KEY",
+    authDomain: "DIN_APP.firebaseapp.com",
+    projectId: "DIT_PROJECT_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.submitAnswer = async function () {
+    const situation = document.getElementById("situation").value;
+    const characters = document.getElementById("characters").value;
+    const teamId = document.getElementById("teamId").value;
+
+    document.getElementById("status").innerText = "⏳ Sender...";
+
+    await addDoc(collection(db, "submissions"), {
+      teamId: teamId,
+      imageId: "image1",
+      situationGuess: situation,
+      characterGuess: characters,
+      score: 0,
+      status: "pending",
+      createdAt: new Date()
+    });
+
+    document.getElementById("status").innerText = "✅ Sendt";
+  };
+
+  // 🔥 LIVE LISTENER (det føles som AI)
+  const q = query(collection(db, "submissions"), orderBy("createdAt", "desc"), limit(1));
+
+  onSnapshot(q, (snapshot) => {
+    snapshot.forEach(doc => {
+      const data = doc.data();
+
+      document.getElementById("result").innerText =
+        `Score: ${data.score} | Status: ${data.status}`;
+    });
+  });
+
+</script>
+
+</body>
+</html>
