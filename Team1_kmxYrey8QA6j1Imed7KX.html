@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt & Grimasser</title>
+  <style>
+    :root {
+      --panel-bg: rgba(0,0,0,0.50);
+      --overlay-bg: rgba(0,0,0,0.58);
+      --popup-overlay-bg: rgba(0,0,0,0.70);
+      --danger: #ff4d4f;
+      --warning: #ffd54f;
+      --accent: #00bcd4;
+      --accent-hover: #00d8f5;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: url("background_admin.png") no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: var(--overlay-bg);
+      z-index: -1;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+
+.top-item-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.top-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-icon img {
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 0 10px rgba(0,188,212,0.8));
+}
+
+    
+.topbar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+
+.top-icon {
+  margin-bottom: 6px;
+}
+
+.top-icon img {
+  width: 40px;
+  height: 40px;
+filter: none;
+
+}
+
+
+.top-item {
+  position: relative;
+  background: linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.6));
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+
+  /* GLAS LOOK */
+  border: 1px solid rgba(0,188,212,0.25);
+
+  /* INDRE GLOW */
+  box-shadow: 
+    inset 0 0 20px rgba(0,188,212,0.08),
+   0 0 25px rgba(0,188,212,0.25);
+}
+
+
+.top-label {
+  font-size: 12px;
+  opacity: 1;
+
+  /* FARVE */
+  color: #00bcd4;
+
+  /* LET GLOW */
+  text-shadow: 
+    0 0 6px rgba(0,188,212,0.8),
+    0 0 12px rgba(0,188,212,0.4);
+
+  letter-spacing: 2px;
+}
+
+
+.top-item:hover {
+  box-shadow:
+    inset 0 0 25px rgba(0,188,212,0.2),
+    0 0 35px rgba(0,188,212,0.6);
+  transition: 0.2s;
+}
+
+
+.top-value {
+  font-size: 30px;
+  font-weight: bold;
+  margin-top: 1px;
+}
+.team-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: flex-start;
+  text-align: left;
+}
+.team-text {
+  text-align: left;
+}
+.team-avatar-wrapper {
+  position: relative;
+  flex: 0 0 auto;
+}
+.team-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+cursor: pointer;
+  display: block;
+  border: 2px solid rgba(0,188,212,0.6);
+  box-shadow: 0 0 12px rgba(0,188,212,0.8);
+  background: rgba(255,255,255,0.08);
+}
+.team-avatar-wrapper::after {
+  content: "⟳";
+  position: absolute;
+  bottom: -4px;
+  right: -6px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  background: #00bcd4;
+  color: black;
+  border-radius: 50%;
+  padding: 2px 5px;
+  box-shadow: 0 0 8px rgba(0,188,212,0.9);
+}
+
+
+    #gameTime {
+      display: inline-block;
+      min-width: 110px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.22);
+      transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #gameTime.warning {
+      color: var(--warning);
+      animation: blink-soft 1s steps(2, start) infinite;
+    }
+
+    #gameTime.danger {
+      color: #fff;
+      background: rgba(255, 77, 79, 0.20);
+      box-shadow: 0 0 16px rgba(255, 77, 79, 0.35);
+      animation: blink-hard 0.65s steps(2, start) infinite;
+    }
+
+    @keyframes blink-soft {
+      50% { opacity: 0.45; }
+    }
+
+    @keyframes blink-hard {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.15; transform: scale(1.03); }
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 30px;
+  margin: 20px auto;
+  max-width: 1100px;
+      margin-top: 20px;
+      align-items: start;
+    }
+
+    .left-panel,
+
+.right-panel {
+  background: linear-gradient(180deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5));
+  padding: 22px;
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+
+  /* vigtig */
+  border: 1px solid rgba(0,188,212,0.2);
+
+  /* giver depth */
+  box-shadow:
+    inset 0 0 20px rgba(0,188,212,0.08),
+    0 0 25px rgba(0,0,0,0.6);
+}
+
+
+    .image-indicator {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .main-image {
+      width: 100%;
+      border-radius: 12px;
+      display: block;
+    }
+
+    .thumb-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .thumb {
+      width: 68px;
+      height: 68px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 3px solid transparent;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    .thumb.active {
+      border-color: white;
+      box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+
+    .section-title {
+      font-size: 20px;
+margin-bottom: 16px;
+      margin: 0 0 12px 0;
+    }
+
+    .power-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .power-btn {
+width: 280px;   /* større */
+height: auto;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .power-btn:hover {
+      transform: scale(1.03);
+    }
+
+    .power-btn.disabled {
+      opacity: 0.35;
+      pointer-events: none;
+      filter: grayscale(40%);
+    }
+
+    .avatar-row {
+      display: grid;
+      grid-template-columns: 128px 1fr;
+      gap: 16px;
+      align-items: start;
+     margin-bottom: 18px;
+ display: none;
+    }
+
+    .avatar-box {
+      width: 128px;
+      height: 128px;
+      border: 2px dashed rgba(255,255,255,0.35);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .avatar-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .avatar-controls small {
+      display: block;
+      margin-top: 8px;
+      color: #ddd;
+    }
+
+    
+input[type="text"] {
+  background: rgba(255,255,255,0.95);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+    input[type="file"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 6px;
+      margin-bottom: 14px;
+      background: rgba(255,255,255,0.92);
+      color: black;
+      font-size: 16px;
+    }
+
+    
+button {
+  background: linear-gradient(90deg, #00bcd4, #0097a7);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  width: fit-content;
+}
+
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .status {
+      min-height: 24px;
+      margin-top: 10px;
+      color: #d8faff;
+    }
+
+    .result-box {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.25);
+      min-height: 40px;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(14px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #startOverlay {
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(18px) brightness(0.7);
+    }
+
+    #countdownOverlay {
+      background: rgba(0,0,0,0.30);
+      backdrop-filter: blur(10px);
+    }
+
+    .popup {
+      background: white;
+      color: black;
+      padding: 30px 34px;
+      border-radius: 14px;
+      font-size: 22px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 680px;
+      width: min(680px, 100%);
+    }
+
+    .popup h2 {
+      margin: 0 0 8px 0;
+      font-size: 32px;
+    }
+
+    .popup p {
+      margin: 8px 0 0 0;
+      line-height: 1.4;
+    }
+
+    .popup small {
+      display: block;
+      margin-top: 12px;
+      color: #666;
+      font-size: 15px;
+    }
+
+    #countdownNumber {
+      font-size: 110px;
+      margin: 0;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 2px;
+      animation: countdown-pop 0.9s ease;
+    }
+
+    .countdown-pulse {
+      animation: countdown-pop 0.9s ease;
+    }
+
+    @keyframes countdown-pop {
+      0% { transform: scale(0.55); opacity: 0; }
+      50% { transform: scale(1.18); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .dots::after {
+      content: "";
+      animation: dots 1.5s steps(4, end) infinite;
+      margin-left: 5px;
+    }
+
+    @keyframes dots {
+      0% { content: ""; }
+      25% { content: "."; }
+      50% { content: ".."; }
+      75% { content: "..."; }
+      100% { content: ""; }
+    }
+
+    .muted {
+      color: #bbb;
+      font-size: 14px;
+    }
+  
+
+/* FINAL MIDTERDEL FIX */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 16px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+input[type="text"] {
+  width: 100%;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+#submitBtn {
+  margin-top: 10px;
+  width: 180px;
+}
+
+.power-row {
+  gap: 16px;
+}
+
+.power-btn {
+  width: 140px;
+  border-radius: 12px;
+  background: rgba(0,188,212,0.08);
+  padding: 8px;
+  border: 1px solid rgba(0,188,212,0.3);
+}
+
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<div class="topbar">
+
+  <!-- TEAM -->
+  <div class="top-item team-box">
+    <div class="team-avatar-wrapper">
+      <img id="previewTop" class="team-avatar" src="">
+    </div>
+
+    <div class="top-text">
+      <div class="top-label">TEAM</div>
+      <div class="top-value" id="teamDisplay">Team</div>
+    </div>
+  </div>
+
+  <!-- POINT -->
+  <div class="top-item top-item-row">
+    <div class="top-icon">
+      <img src="Graf_pokal.png">
+    </div>
+
+    <div class="top-text">
+      <div class="top-label">POINT</div>
+      <div class="top-value" id="teamScore">0</div>
+    </div>
+  </div>
+
+  <!-- TID -->
+  <div class="top-item top-item-row">
+    <div class="top-icon">
+      <img src="Graf_tid.png">
+    </div>
+
+    <div class="top-text">
+      <div class="top-label">TID TILBAGE</div>
+      <div class="top-value" id="gameTime">20:00</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+  <div class="layout">
+    <div class="left-panel">
+      <div class="image-indicator" id="imageIndicator">Billede 1</div>
+      <img id="mainImage" class="main-image" src="PIC1.png" alt="Aktivt billede">
+      <div class="thumb-row">
+        <img class="thumb active" src="PIC1.png" alt="PIC1" onclick="changeImage(1)">
+        <img class="thumb" src="PIC2.png" alt="PIC2" onclick="changeImage(2)">
+        <img class="thumb" src="PIC3.png" alt="PIC3" onclick="changeImage(3)">
+        <img class="thumb" src="PIC4.png" alt="PIC4" onclick="changeImage(4)">
+        <img class="thumb" src="PIC5.png" alt="PIC5" onclick="changeImage(5)">
+      </div>
+    </div>
+
+    <div class="right-panel">
+<input type="file" id="imageUpload" accept="image/*" style="display:none">
+<button id="saveAvatarBtn" style="display:none"></button>
+<small id="avatarStatus" class="muted" style="display:none"></small>
+  <div class="section-title">POWERFUNCTIONS</div>
+  <div class="power-row">
+    <img id="boost1" class="power-btn" src="knap1.png" alt="Boost 1">
+    <img id="boost2" class="power-btn" src="knap2.png" alt="Boost 2">
+  </div>
+
+  <div class="form-container">
+
+    <div class="form-group">
+      <label for="situation">HVAD SKER DER?</label>
+      <input id="situation" type="text">
+    </div>
+
+    <div class="form-group">
+      <label for="characters">HVEM ER MED?</label>
+      <input id="characters" type="text">
+    </div>
+
+    <button id="submitBtn" type="button">Submit</button>
+
+  </div>
+
+  <div id="status" class="status"></div>
+  <div class="result-box" id="result">Ingen data endnu</div>
+</div>
+
+<div id="startOverlay" class="overlay">
+  <div class="popup">
+    <h2>Prompt &amp; Grimasser</h2>
+    <p>Spillet er ikke startet endnu.</p>
+    <small>Skærmen åbnes automatisk, når Gamemaster starter spillet fra kontrolsiden.</small>
+  </div>
+</div>
+
+<div id="countdownOverlay" class="overlay">
+  <div class="popup">
+    <h1 id="countdownNumber">3</h1>
+    <p>Gør jer klar...</p>
+  </div>
+</div>
+
+<div id="pauseOverlay" class="overlay">
+  <div class="popup">
+    <h2>Pause</h2>
+    <p>Gamemaster har pauset skærmen.</p>
+    <small>Spillet fortsætter automatisk, når det bliver sat i gang igen.</small>
+  </div>
+</div>
+
+<div id="aiOverlay" class="overlay">
+  <div class="popup">
+    <h2 id="aiText">Modtager data fra Copilot LLM</h2>
+    <p id="aiSubtext">AI'en gør klar til at vurdere jeres svar<span class="dots"></span></p>
+    <small id="aiModeNote">Standard-score er aktiv.</small>
+  </div>
+</div>
+
+<div id="timeUpPopup" class="overlay">
+  <div class="popup">
+    <h2>⛔ TIDEN ER GÅET!</h2>
+    <p>Det er ikke længere muligt at indsende svar.</p>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    onSnapshot,
+    doc,
+    serverTimestamp,
+    setDoc,
+    getDoc,
+    query,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+  const TEAM_ID = "team1";
+  const BASIC_SCORE_DELAY_MS = 10000;
+
+  const app = initializeApp({
+    apiKey: "AIzaSyBwIk0NTaRYf1S2cQ6yRtmZjUczqRQuNZU",
+    authDomain: "modu-dagen-2026.firebaseapp.com",
+    projectId: "modu-dagen-2026"
+  });
+
+  const db = getFirestore(app);
+  const teamRef = doc(db, "teams", TEAM_ID);
+  const gameRef = doc(db, "games", "current");
+
+  let currentImageId = "image1";
+  let teamSubmissions = [];
+  let imageBase64 = "";
+  let gameData = {};
+  let currentTeamData = {};
+  let localDrafts = {};
+  let previousStatus = null;
+  let countdownRunning = false;
+
+  const teamDisplayEl = document.getElementById("teamDisplay");
+  const teamScoreEl = document.getElementById("teamScore");
+  const gameTimeEl = document.getElementById("gameTime");
+  const mainImageEl = document.getElementById("mainImage");
+  const imageIndicatorEl = document.getElementById("imageIndicator");
+const previewEl = document.getElementById("previewTop");
+  const avatarStatusEl = document.getElementById("avatarStatus");
+  const situationEl = document.getElementById("situation");
+  const charactersEl = document.getElementById("characters");
+  const submitBtnEl = document.getElementById("submitBtn");
+  const statusEl = document.getElementById("status");
+  const resultEl = document.getElementById("result");
+  const aiOverlayEl = document.getElementById("aiOverlay");
+  const aiTextEl = document.getElementById("aiText");
+  const aiSubtextEl = document.getElementById("aiSubtext");
+  const aiModeNoteEl = document.getElementById("aiModeNote");
+  const startOverlayEl = document.getElementById("startOverlay");
+  const countdownOverlayEl = document.getElementById("countdownOverlay");
+  const countdownNumberEl = document.getElementById("countdownNumber");
+  const pauseOverlayEl = document.getElementById("pauseOverlay");
+  const timeUpPopupEl = document.getElementById("timeUpPopup");
+  const boost1El = document.getElementById("boost1");
+  const boost2El = document.getElementById("boost2");
+
+  function getDraftForCurrentImage() {
+    return localDrafts[currentImageId] || null;
+  }
+
+  function saveDraftForCurrentImage() {
+    localDrafts[currentImageId] = {
+      situationGuess: situationEl.value,
+      characterGuess: charactersEl.value,
+      dirty: true
+    };
+  }
+
+  function clearDraftForCurrentImage() {
+    delete localDrafts[currentImageId];
+  }
+
+  situationEl.addEventListener("input", saveDraftForCurrentImage);
+  charactersEl.addEventListener("input", saveDraftForCurrentImage);
+
+  function getTimestampMs(value) {
+    if (!value) return 0;
+    if (typeof value.toMillis === "function") return value.toMillis();
+    if (typeof value.seconds === "number") return value.seconds * 1000;
+    if (typeof value === "number") return value;
+    return 0;
+  }
+
+  function getGameRemainingMs() {
+    if (gameData.status === "running") {
+      const start = Number(gameData.startTime || 0);
+      const durationMs = Number(gameData.durationSeconds || 0) * 1000;
+      if (!start || !durationMs) return 0;
+      return Math.max(0, (start + durationMs) - Date.now());
+    }
+
+    if (gameData.status === "paused") {
+      return Math.max(0, Number(gameData.remainingSeconds || 0) * 1000);
+    }
+
+    return 0;
+  }
+
+  function isGameRunningNow() {
+    return gameData.status === "running" && getGameRemainingMs() > 0;
+  }
+
+
+function getSubmissionRevealDelay(submission) {
+  if (!submission) return 0;
+
+  // ALTID brug det vi har sendt fra submit
+  if (typeof submission.revealDelayMs === "number") {
+    return submission.revealDelayMs;
+  }
+
+  return BASIC_SCORE_DELAY_MS;
+}
+
+
+  function getSubmissionRevealAt(submission) {
+    const createdAtMs = getTimestampMs(submission?.createdAt);
+    return createdAtMs ? createdAtMs + getSubmissionRevealDelay(submission) : 0;
+  }
+
+  function getRevealRemainingMs(submission) {
+    const revealAt = getSubmissionRevealAt(submission);
+    if (!revealAt) return getSubmissionRevealDelay(submission);
+    return Math.max(0, revealAt - Date.now());
+  }
+
+  function isSubmissionRevealed(submission) {
+    return getRevealRemainingMs(submission) <= 0;
+  }
+
+  function getLatestSubmissionForImage(imageId) {
+    return teamSubmissions.find(s => s.imageId === imageId) || null;
+  }
+
+  function getLatestVisibleScoredSubmissionForImage(imageId) {
+    return teamSubmissions.find(s => (
+      s.imageId === imageId &&
+      s.status === "done" &&
+      isSubmissionRevealed(s)
+    )) || null;
+  }
+
+  function showOverlay(element, show) {
+    element.style.display = show ? "flex" : "none";
+  }
+
+  function animateCountdownNumber() {
+    countdownNumberEl.classList.remove("countdown-pulse");
+    void countdownNumberEl.offsetWidth;
+    countdownNumberEl.classList.add("countdown-pulse");
+  }
+
+  async function runCountdown() {
+    if (countdownRunning) return;
+    countdownRunning = true;
+    showOverlay(countdownOverlayEl, true);
+
+    const steps = ["3", "2", "1", "GO!"];
+    for (const step of steps) {
+      countdownNumberEl.innerText = step;
+      animateCountdownNumber();
+      await new Promise(resolve => setTimeout(resolve, 900));
+    }
+
+    showOverlay(countdownOverlayEl, false);
+    countdownRunning = false;
+  }
+
+  function updateTimerDisplay() {
+    const remaining = getGameRemainingMs();
+    const sec = Math.max(0, Math.ceil(remaining / 1000));
+    const m = String(Math.floor(sec / 60)).padStart(2, "0");
+    const s = String(sec % 60).padStart(2, "0");
+    gameTimeEl.innerText = `${m}:${s}`;
+
+    gameTimeEl.classList.remove("warning", "danger");
+    if (remaining > 0 && sec <= 10) {
+      gameTimeEl.classList.add("danger");
+    } else if (remaining > 0 && sec <= 60) {
+      gameTimeEl.classList.add("warning");
+    }
+  }
+
+  function getAIOverlayState() {
+    const latest = teamSubmissions[0];
+    if (!latest) return { visible: false };
+
+    const delayRemaining = getRevealRemainingMs(latest);
+    const delaySeconds = Math.max(0, Math.ceil(delayRemaining / 1000));
+    const mode = latest.mode || "basic";
+
+    if (latest.status === "error") {
+      return {
+        visible: false,
+        statusMessage: "⚠️ Der opstod en fejl under AI-score. Prøv igen."
+      };
+    }
+
+    if (latest.status === "pending") {
+      if (delayRemaining > 0) {
+        return {
+          visible: true,
+          title: mode === "advanced" ? "MODU AI arbejder" : "AI-score starter om lidt",
+          body: mode === "advanced"
+            ? "Modtager data fra MODU AI LLM – GPT-A10 Pro"
+            : `AI vurderer jeres svar om ${delaySeconds} sek.`,
+          note: mode === "advanced"
+            ? "Powerfunction er aktiv – scoring vises uden forsinkelse."
+            : "Standard-score har 10 sekunders forsinkelse. Køb powerfunctionen for at springe forsinkelsen over.",
+          statusMessage: mode === "advanced" ? "AI arbejder..." : `AI-delay aktiv (${delaySeconds} sek.)`
+        };
+      }
+
+      return {
+        visible: true,
+        title: mode === "advanced" ? "Copilot Pro beregner score" : "Copilot beregner score",
+        body: mode === "advanced"
+          ? "Scoren hentes fra MODU AI LLM – GPT-A10 Pro"
+          : "Scoren hentes fra Copilot LLM – GPT-4",
+        note: mode === "advanced"
+          ? "Powerfunction er aktiv – scoring vises med det samme, når svaret er klar."
+          : "Venter på AI-score...",
+        statusMessage: "AI arbejder..."
+      };
+    }
+
+    if (latest.status === "done" && delayRemaining > 0) {
+      return {
+        visible: true,
+        title: "AI-score er klar",
+        body: `Scoren frigives om ${delaySeconds} sek.`,
+        note: "Resultatet AI-kalibreres med Basis LLM.",
+        statusMessage: `AI-score frigives om ${delaySeconds} sek.`
+      };
+    }
+
+    return {
+      visible: false,
+      statusMessage: latest.status === "done" ? "✅ Resultat opdateret" : ""
+    };
+  }
+
+  function syncAIOverlay() {
+    const state = getAIOverlayState();
+    showOverlay(aiOverlayEl, state.visible === true);
+
+    if (state.title) aiTextEl.innerText = state.title;
+    if (state.body) aiSubtextEl.innerText = state.body;
+    if (state.note) aiModeNoteEl.innerText = state.note;
+    if (typeof state.statusMessage === "string") statusEl.innerText = state.statusMessage;
+  }
+
+  function syncGameOverlays() {
+    const remaining = getGameRemainingMs();
+    const isRunning = gameData.status === "running";
+    const isPaused = gameData.status === "paused";
+    const isTimeUp = (isRunning && remaining <= 0) || gameData.status === "ended" || gameData.status === "finished";
+    const showStart = !isRunning && !isPaused && !isTimeUp;
+
+    showOverlay(startOverlayEl, showStart);
+    showOverlay(pauseOverlayEl, isPaused);
+    showOverlay(timeUpPopupEl, isTimeUp);
+
+    const canSubmit = isGameRunningNow();
+    const canEdit = isGameRunningNow();
+    situationEl.disabled = !canEdit;
+    charactersEl.disabled = !canEdit;
+    submitBtnEl.disabled = !canSubmit;
+  }
+
+  function renderCurrentImageState() {
+    const latestForImage = getLatestSubmissionForImage(currentImageId);
+    const latestVisibleScore = getLatestVisibleScoredSubmissionForImage(currentImageId);
+    const draft = getDraftForCurrentImage();
+
+    if (draft && draft.dirty) {
+      if (document.activeElement !== situationEl) situationEl.value = draft.situationGuess || "";
+      if (document.activeElement !== charactersEl) charactersEl.value = draft.characterGuess || "";
+
+      if (latestForImage?.status === "error") {
+        resultEl.innerText = "Der opstod en fejl ved AI-scoren. Prøv igen.";
+      } else if (latestForImage?.status === "pending") {
+        const waitMs = getRevealRemainingMs(latestForImage);
+        resultEl.innerText = waitMs > 0
+          ? `AI-score starter om ${Math.ceil(waitMs / 1000)} sek.`
+          : "Beregner AI-score...";
+      } else if (latestForImage?.status === "done" && !isSubmissionRevealed(latestForImage)) {
+        const seconds = Math.ceil(getRevealRemainingMs(latestForImage) / 1000);
+        const previousText = latestVisibleScore && latestVisibleScore !== latestForImage
+          ? `Seneste viste score: ${latestVisibleScore.score ?? 0}. `
+          : "";
+        resultEl.innerText = `${previousText}Ny score frigives om ${seconds} sek.`;
+      } else if (latestVisibleScore) {
+        resultEl.innerText = "Score: " + (latestVisibleScore.score ?? 0);
+      } else {
+        resultEl.innerText = "Ingen data endnu";
+      }
+      return;
+    }
+
+    if (!latestForImage) {
+      situationEl.value = "";
+      charactersEl.value = "";
+      resultEl.innerText = "Ingen data endnu";
+      return;
+    }
+
+    if (document.activeElement !== situationEl) situationEl.value = latestForImage.situationGuess || "";
+    if (document.activeElement !== charactersEl) charactersEl.value = latestForImage.characterGuess || "";
+
+    if (latestForImage.status === "error") {
+      resultEl.innerText = "Der opstod en fejl ved AI-scoren. Prøv igen.";
+      return;
+    }
+
+    if (latestForImage.status === "pending") {
+      const waitMs = getRevealRemainingMs(latestForImage);
+      if (waitMs > 0) {
+        const seconds = Math.ceil(waitMs / 1000);
+        resultEl.innerText = `AI-score starter om ${seconds} sek.`;
+        return;
+      }
+      resultEl.innerText = "Beregner AI-score...";
+      return;
+    }
+
+    if (latestForImage.status === "done" && !isSubmissionRevealed(latestForImage)) {
+      const seconds = Math.ceil(getRevealRemainingMs(latestForImage) / 1000);
+      const previousText = latestVisibleScore && latestVisibleScore !== latestForImage
+        ? `Seneste viste score: ${latestVisibleScore.score ?? 0}. `
+        : "";
+      resultEl.innerText = `${previousText}Ny score frigives om ${seconds} sek.`;
+      return;
+    }
+
+    if (latestForImage.status === "done") {
+      resultEl.innerText = "Score: " + (latestForImage.score ?? 0);
+      return;
+    }
+
+    resultEl.innerText = latestVisibleScore
+      ? "Score: " + (latestVisibleScore.score ?? 0)
+      : "Ingen data endnu";
+  }
+
+  async function calcScore() {
+    const visibleLatestByImage = {};
+
+    for (const submission of teamSubmissions) {
+      if (visibleLatestByImage[submission.imageId]) continue;
+      if (submission.status !== "done") continue;
+      if (!isSubmissionRevealed(submission)) continue;
+      visibleLatestByImage[submission.imageId] = submission;
+    }
+
+    const scores = Object.values(visibleLatestByImage).map(s => Number(s.score || 0));
+    const total = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) : 0;
+    await setDoc(teamRef, { totalScore: total }, { merge: true });
+  }
+
+  window.changeImage = function(i) {
+    currentImageId = "image" + i;
+    mainImageEl.src = "PIC" + i + ".png";
+    imageIndicatorEl.innerText = "Billede " + i;
+    document.querySelectorAll(".thumb").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".thumb")[i - 1].classList.add("active");
+    renderCurrentImageState();
+    syncAIOverlay();
+  };
+
+  onSnapshot(teamRef, snap => {
+    currentTeamData = snap.data() || {};
+    const displayName = currentTeamData.displayName || TEAM_ID;
+    const total = (currentTeamData.totalScore || 0) + (currentTeamData.penalty || 0);
+
+
+teamDisplayEl.innerText = displayName;
+teamScoreEl.innerText = total;
+
+
+    if (currentTeamData.avatar) {
+      previewEl.src = currentTeamData.avatar;
+      const previewTopEl = document.getElementById("previewTop");
+      if (previewTopEl) previewTopEl.src = currentTeamData.avatar;
+    }
+
+    boost1El.classList.toggle("disabled", currentTeamData.boost1Used === true);
+    boost2El.classList.toggle("disabled", currentTeamData.boost2Used === true);
+  });
+
+  onSnapshot(gameRef, async snap => {
+    gameData = snap.data() || {};
+    const currentStatus = gameData.status || null;
+
+    if (currentStatus === "running" && previousStatus !== "running") {
+      showOverlay(startOverlayEl, false);
+      await runCountdown();
+    }
+
+    previousStatus = currentStatus;
+
+    updateTimerDisplay();
+    syncGameOverlays();
+    syncAIOverlay();
+  });
+
+  setInterval(async () => {
+    updateTimerDisplay();
+    syncGameOverlays();
+    syncAIOverlay();
+    renderCurrentImageState();
+
+    if (teamSubmissions.some(s => s.status === "done")) {
+      await calcScore();
+    }
+  }, 1000);
+
+  document.getElementById("imageUpload").addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 800000) {
+      alert("Billedet er for stort (max ca. 800 KB). Vælg et mindre billede.");
+      e.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+      imageBase64 = ev.target.result;
+      previewEl.src = imageBase64;
+      avatarStatusEl.innerText = "Nyt billede valgt";
+
+// auto-save efter valg
+setTimeout(() => {
+  document.getElementById("saveAvatarBtn").click();
+}, 100);
+
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("saveAvatarBtn").onclick = async () => {
+    if (!imageBase64) {
+      avatarStatusEl.innerText = "Vælg et billede først";
+      return;
+    }
+
+    await setDoc(teamRef, { avatar: imageBase64 }, { merge: true });
+    avatarStatusEl.innerText = "✅ Billede opdateret";
+  };
+
+  async function useBoost(fieldName) {
+    const snap = await getDoc(teamRef);
+    const data = snap.data() || {};
+    if (data[fieldName]) return;
+
+    const newPenalty = (data.penalty || 0) - 50;
+    const update = { penalty: newPenalty };
+    update[fieldName] = true;
+    await setDoc(teamRef, update, { merge: true });
+  }
+
+  boost1El.onclick = () => useBoost("boost1Used");
+  boost2El.onclick = () => useBoost("boost2Used");
+
+document.getElementById("previewTop").onclick = function() {
+  document.getElementById("imageUpload").click();
+};
+
+
+  submitBtnEl.onclick = async () => {
+    if (!isGameRunningNow()) {
+      syncGameOverlays();
+      statusEl.innerText = "⛔ Tiden er gået – submit er låst.";
+      return;
+    }
+
+
+const fastMode = currentTeamData.boost1Used === true;
+const advancedMode = currentTeamData.boost2Used === true;
+
+const revealDelayMs = fastMode ? 0 : BASIC_SCORE_DELAY_MS;
+const mode = advancedMode ? "advanced" : "basic";
+
+
+    
+statusEl.innerText = advancedMode
+  ? "AI arbejder..."
+  : `AI-delay aktiv (${Math.ceil(revealDelayMs / 1000)} sek.)`;
+
+showOverlay(aiOverlayEl, true);
+
+aiTextEl.innerText = advancedMode ? "Copilot Pro arbejder" : "AI-score starter om lidt";
+
+aiSubtextEl.innerText = advancedMode
+  ? "Scoren hentes fra Copilot LLM – GPT-4 Pro"
+  : `AI vurderer jeres svar om ${Math.ceil(revealDelayMs / 1000)} sek.`;
+
+aiModeNoteEl.innerText = advancedMode
+  ? "Powerfunction er aktiv – scoring vises uden forsinkelse."
+  : "Standard-score har 10 sekunders forsinkelse. Køb powerfunctionen for at springe forsinkelsen over.";
+
+
+    localDrafts[currentImageId] = {
+      situationGuess: situationEl.value,
+      characterGuess: charactersEl.value,
+      dirty: false
+    };
+    await addDoc(collection(db, "gameSubmissions"), {
+      teamId: TEAM_ID,
+      imageId: currentImageId,
+      situationGuess: situationEl.value,
+      characterGuess: charactersEl.value,
+      score: 0,
+      status: "pending",
+      mode,
+      revealDelayMs,
+      createdAt: serverTimestamp()
+    });
+  };
+
+  onSnapshot(
+    query(collection(db, "gameSubmissions"), orderBy("createdAt", "desc")),
+    async snap => {
+      teamSubmissions = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(d => d.teamId === TEAM_ID);
+
+      const latestForCurrentImage = getLatestSubmissionForImage(currentImageId);
+      const draft = getDraftForCurrentImage();
+      if (draft && latestForCurrentImage &&
+          latestForCurrentImage.situationGuess === draft.situationGuess &&
+          latestForCurrentImage.characterGuess === draft.characterGuess) {
+        clearDraftForCurrentImage();
+      }
+      renderCurrentImageState();
+      syncAIOverlay();
+      await calcScore();
+    }
+  );
+
+  updateTimerDisplay();
+  syncGameOverlays();
+  renderCurrentImageState();
+  syncAIOverlay();
+</script>
+</body>
+</html>
